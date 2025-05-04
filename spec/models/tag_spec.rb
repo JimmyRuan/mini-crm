@@ -3,14 +3,14 @@ require 'rails_helper'
 RSpec.describe Tag, type: :model do
   describe 'validations' do
     subject { build(:tag) }
-    
-    it { should validate_presence_of(:name) }
-    it { should validate_uniqueness_of(:name).case_insensitive }
+
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_uniqueness_of(:name).case_insensitive }
   end
 
   describe 'associations' do
-    it { should have_many(:contact_tags).dependent(:destroy) }
-    it { should have_many(:contacts).through(:contact_tags) }
+    it { is_expected.to have_many(:contact_tags).dependent(:destroy) }
+    it { is_expected.to have_many(:contacts).through(:contact_tags) }
   end
 
   describe 'factory' do
@@ -25,4 +25,4 @@ RSpec.describe Tag, type: :model do
       expect(new_tag.errors[:name]).to include('has already been taken')
     end
   end
-end 
+end

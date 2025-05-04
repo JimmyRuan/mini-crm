@@ -7,4 +7,4 @@ class ContactTag < ApplicationRecord
   # Associations
   belongs_to :contact
   belongs_to :tag
-end 
+end

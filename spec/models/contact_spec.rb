@@ -5,17 +5,17 @@ RSpec.describe Contact, type: :model do
   describe 'validations' do
     let(:contact) { build(:contact) }
     let!(:existing_contact) { create(:contact) }
-    
-    it { should validate_presence_of(:name) }
-    it { should validate_presence_of(:email) }
-    it { should validate_uniqueness_of(:email).case_insensitive.with_message('has already been taken') }
-    it { should allow_value('user@example.com').for(:email) }
-    it { should_not allow_value('invalid_email').for(:email) }
+
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:email) }
+    it { is_expected.to validate_uniqueness_of(:email).case_insensitive.with_message('has already been taken') }
+    it { is_expected.to allow_value('user@example.com').for(:email) }
+    it { is_expected.not_to allow_value('invalid_email').for(:email) }
   end
 
   describe 'associations' do
-    it { should have_many(:contact_tags).dependent(:destroy) }
-    it { should have_many(:tags).through(:contact_tags) }
+    it { is_expected.to have_many(:contact_tags).dependent(:destroy) }
+    it { is_expected.to have_many(:tags).through(:contact_tags) }
   end
 
   describe 'scopes' do
@@ -47,4 +47,4 @@ RSpec.describe Contact, type: :model do
       expect(contact.tags.count).to eq(3)
     end
   end
-end 
+end

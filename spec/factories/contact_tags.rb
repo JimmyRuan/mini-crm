@@ -3,4 +3,4 @@ FactoryBot.define do
     association :contact
     association :tag
   end
-end 
+end

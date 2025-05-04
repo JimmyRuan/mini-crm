@@ -9,4 +9,4 @@ class Contact < ApplicationRecord
 
   # Scopes
   scope :with_tag, ->(tag_name) { joins(:tags).where(tags: { name: tag_name }) }
-end 
+end

@@ -5,15 +5,15 @@ RSpec.describe ContactTag, type: :model do
     let(:contact) { create(:contact) }
     let(:tag) { create(:tag) }
     let!(:existing_contact_tag) { create(:contact_tag, contact: contact, tag: tag) }
-    
-    it { should validate_presence_of(:contact_id) }
-    it { should validate_presence_of(:tag_id) }
-    it { should validate_uniqueness_of(:contact_id).scoped_to(:tag_id) }
+
+    it { is_expected.to validate_presence_of(:contact_id) }
+    it { is_expected.to validate_presence_of(:tag_id) }
+    it { is_expected.to validate_uniqueness_of(:contact_id).scoped_to(:tag_id) }
   end
 
   describe 'associations' do
-    it { should belong_to(:contact) }
-    it { should belong_to(:tag) }
+    it { is_expected.to belong_to(:contact) }
+    it { is_expected.to belong_to(:tag) }
   end
 
   describe 'factory' do
@@ -29,4 +29,4 @@ RSpec.describe ContactTag, type: :model do
       expect(duplicate).not_to be_valid
     end
   end
-end 
+end

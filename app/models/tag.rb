@@ -5,4 +5,4 @@ class Tag < ApplicationRecord
   # Associations
   has_many :contact_tags, dependent: :destroy
   has_many :contacts, through: :contact_tags
-end 
+end
