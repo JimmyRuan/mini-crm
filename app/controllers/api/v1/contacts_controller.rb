@@ -4,8 +4,13 @@ module Api
       before_action :set_contact, only: %i[show update destroy]
 
       def index
-        @contacts = Contact.all
-        render json: @contacts
+        @contacts = Contact.paginate(page: params[:page], per_page: params[:per_page] || 10)
+        render json: {
+          contacts: @contacts,
+          total_pages: @contacts.total_pages,
+          current_page: @contacts.current_page,
+          total_entries: @contacts.total_entries
+        }
       end
 
       def search
@@ -13,8 +18,13 @@ module Api
         if tag_name.present?
           # Normalize the search term: trim whitespace and convert to lowercase
           normalized_tag = tag_name.strip.downcase
-          @contacts = Contact.with_tag(normalized_tag)
-          render json: @contacts
+          @contacts = Contact.with_tag(normalized_tag).paginate(page: params[:page], per_page: params[:per_page] || 10)
+          render json: {
+            contacts: @contacts,
+            total_pages: @contacts.total_pages,
+            current_page: @contacts.current_page,
+            total_entries: @contacts.total_entries
+          }
         else
           render json: { error: 'Tag parameter is required' }, status: :bad_request
         end

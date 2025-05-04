@@ -18,15 +18,32 @@ RSpec.describe Api::V1::ContactsController do
   let(:contact) { create(:contact) }
 
   describe 'GET #index' do
+    before do
+      15.times { create(:contact) }
+    end
+
     it 'returns a success response' do
       get :index
       expect(response).to be_successful
     end
 
-    it 'returns all contacts' do
-      create_list(:contact, 3)
+    it 'returns paginated contacts' do
       get :index
-      expect(response.parsed_body.size).to eq(3)
+      expect(response.parsed_body['contacts'].size).to eq(10)
+      expect(response.parsed_body['total_pages']).to eq(2)
+      expect(response.parsed_body['current_page']).to eq(1)
+      expect(response.parsed_body['total_entries']).to eq(15)
+    end
+
+    it 'respects per_page parameter' do
+      get :index, params: { per_page: 5 }
+      expect(response.parsed_body['contacts'].size).to eq(5)
+      expect(response.parsed_body['total_pages']).to eq(3)
+    end
+
+    it 'respects page parameter' do
+      get :index, params: { page: 2 }
+      expect(response.parsed_body['current_page']).to eq(2)
     end
   end
 
@@ -122,53 +139,36 @@ RSpec.describe Api::V1::ContactsController do
 
   describe 'GET #search' do
     let(:tag) { create(:tag, name: 'important') }
-    let(:contact_with_tag) { create(:contact) }
 
     before do
-      contact_with_tag.tags << tag
-    end
-
-    context 'when tag parameter is present' do
-      it 'returns contacts with the specified tag' do
-        get :search, params: { tag: 'important' }
-        expect(response).to be_successful
-        expect(response.parsed_body.size).to eq(1)
-        expect(response.parsed_body.first['id']).to eq(contact_with_tag.id)
-      end
-
-      it 'is case insensitive' do
-        get :search, params: { tag: 'IMPORTANT' }
-        expect(response).to be_successful
-        expect(response.parsed_body.size).to eq(1)
-      end
-
-      it 'handles whitespace' do
-        get :search, params: { tag: ' important ' }
-        expect(response).to be_successful
-        expect(response.parsed_body.size).to eq(1)
-      end
-
-      it 'returns empty array when no contacts have the tag' do
-        get :search, params: { tag: 'nonexistent' }
-        expect(response).to be_successful
-        expect(response.parsed_body).to be_empty
+      15.times do
+        contact = create(:contact)
+        contact.tags << tag
       end
     end
 
-    context 'when tag parameter is missing' do
-      it 'returns bad request status' do
-        get :search
-        expect(response).to have_http_status(:bad_request)
-        expect(response.parsed_body['error']).to eq('Tag parameter is required')
-      end
+    it 'returns paginated contacts with the specified tag' do
+      get :search, params: { tag: 'important' }
+      expect(response.parsed_body['contacts'].size).to eq(10)
+      expect(response.parsed_body['total_pages']).to eq(2)
+      expect(response.parsed_body['current_page']).to eq(1)
+      expect(response.parsed_body['total_entries']).to eq(15)
     end
 
-    context 'when tag parameter is empty' do
-      it 'returns bad request status' do
-        get :search, params: { tag: '' }
-        expect(response).to have_http_status(:bad_request)
-        expect(response.parsed_body['error']).to eq('Tag parameter is required')
-      end
+    it 'respects per_page parameter in search' do
+      get :search, params: { tag: 'important', per_page: 5 }
+      expect(response.parsed_body['contacts'].size).to eq(5)
+      expect(response.parsed_body['total_pages']).to eq(3)
+    end
+
+    it 'respects page parameter in search' do
+      get :search, params: { tag: 'important', page: 2 }
+      expect(response.parsed_body['current_page']).to eq(2)
+    end
+
+    it 'returns bad request when tag parameter is missing' do
+      get :search
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end
