@@ -121,9 +121,8 @@ RSpec.describe Api::V1::ContactsController do
   end
 
   describe 'GET #search' do
-    let!(:tag) { create(:tag, name: 'important') }
-    let!(:contact_with_tag) { create(:contact) }
-    let!(:contact_without_tag) { create(:contact) }
+    let(:tag) { create(:tag, name: 'important') }
+    let(:contact_with_tag) { create(:contact) }
 
     before do
       contact_with_tag.tags << tag
