@@ -4,9 +4,14 @@ RSpec.describe ContactTag do
   describe 'validations' do
     let(:contact) { create(:contact) }
     let(:tag) { create(:tag) }
-    let!(:existing_contact_tag) { create(:contact_tag, contact: contact, tag: tag) }
+    let(:contact_tag) { create(:contact_tag, contact: contact, tag: tag) }
 
-    it { is_expected.to validate_uniqueness_of(:contact_id).scoped_to(:tag_id) }
+    it 'validates uniqueness of contact_id scoped to tag_id' do
+      create(:contact_tag, contact: contact, tag: tag)
+      new_contact_tag = build(:contact_tag, contact: contact, tag: tag)
+      expect(new_contact_tag).not_to be_valid
+      expect(new_contact_tag.errors[:contact_id]).to include('has already been taken')
+    end
   end
 
   describe 'associations' do

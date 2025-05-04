@@ -1,10 +1,12 @@
 require 'rails_helper'
-include FactoryBot::Syntax::Methods
 
 RSpec.describe Contact do
+  include FactoryBot::Syntax::Methods
+
   describe 'validations' do
-    let(:contact) { build(:contact) }
-    let!(:existing_contact) { create(:contact) }
+    subject { build(:contact, name: 'Test Contact', email: 'test@example.com') }
+
+    let(:contact_with_same_email) { create(:contact, name: 'Existing Contact', email: 'test@example.com') }
 
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:email) }
@@ -19,20 +21,20 @@ RSpec.describe Contact do
   end
 
   describe 'scopes' do
-    let!(:tag1) { create(:tag, name: 'VIP') }
-    let!(:tag2) { create(:tag, name: 'Regular') }
-    let!(:contact1) { create(:contact) }
-    let!(:contact2) { create(:contact) }
+    let(:vip_tag) { create(:tag, name: 'VIP') }
+    let(:regular_tag) { create(:tag, name: 'Regular') }
+    let(:vip_contact) { create(:contact) }
+    let(:regular_contact) { create(:contact) }
 
     before do
-      create(:contact_tag, contact: contact1, tag: tag1)
-      create(:contact_tag, contact: contact2, tag: tag2)
+      create(:contact_tag, contact: vip_contact, tag: vip_tag)
+      create(:contact_tag, contact: regular_contact, tag: regular_tag)
     end
 
     describe '.with_tag' do
       it 'returns contacts with the specified tag' do
-        expect(described_class.with_tag('VIP')).to include(contact1)
-        expect(described_class.with_tag('VIP')).not_to include(contact2)
+        expect(described_class.with_tag('VIP')).to include(vip_contact)
+        expect(described_class.with_tag('VIP')).not_to include(regular_contact)
       end
     end
   end
