@@ -31,6 +31,9 @@ Rails.application.configure do
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
 
+  # Configure error handling middleware for tests
+  config.middleware.use RailsCopperApi::JsonErrorHandler
+
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
 

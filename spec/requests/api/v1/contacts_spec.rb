@@ -98,6 +98,27 @@ RSpec.describe 'Api::V1::Contacts', type: :request do
         let(:id) { 'invalid' }
         run_test!
       end
+
+      response '500', 'internal server error' do
+        before do
+          allow(Contact).to receive(:find).and_raise(StandardError.new('Unexpected error'))
+        end
+
+        let(:id) { contacts.first.id }
+        schema type: :object,
+          properties: {
+            error: { type: :string },
+            message: { type: :string },
+            backtrace: { type: :array, items: { type: :string } }
+          }
+
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data['error']).to eq('StandardError')
+          expect(data['message']).to eq('Unexpected error')
+          expect(data['backtrace']).to be_present
+        end
+      end
     end
 
     put 'Update a contact' do
