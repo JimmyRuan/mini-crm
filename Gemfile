@@ -55,9 +55,12 @@ group :development, :test do
   gem 'faker'
   gem 'rspec-rails', '~> 6.0'
   gem 'rubocop', '~> 1.60', require: false
+  gem 'rubocop-capybara', '~> 2.20', require: false
+  gem 'rubocop-factory_bot', '~> 2.24', require: false
   gem 'rubocop-performance', '~> 1.20', require: false
   gem 'rubocop-rails', '~> 2.20', require: false
   gem 'rubocop-rspec', '~> 2.26', require: false
+  gem 'rubocop-rspec_rails', '~> 2.26', require: false
   gem 'shoulda-matchers', '~> 6.0'
 end
 

@@ -2,6 +2,9 @@ require:
   - rubocop-rails
   - rubocop-rspec
   - rubocop-performance
+  - rubocop-capybara
+  - rubocop-factory_bot
+  - rubocop-rspec_rails
 
 AllCops:
   NewCops: enable
@@ -15,6 +18,8 @@ AllCops:
     - 'node_modules/**/*'
     - 'tmp/**/*'
     - 'public/**/*'
+    - 'log/**/*'
+    - 'storage/**/*'
 
 Layout/LineLength:
   Max: 120
@@ -46,4 +51,13 @@ RSpec/MultipleExpectations:
   Max: 5
 
 RSpec/NestedGroups:
-  Max: 3 
+  Max: 3
+
+RSpec/FactoryBot:
+  Enabled: true
+
+RSpec/Rails:
+  Enabled: true
+
+Capybara:
+  Enabled: true 

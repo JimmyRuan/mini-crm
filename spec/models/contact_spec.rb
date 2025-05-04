@@ -1,7 +1,7 @@
 require 'rails_helper'
 include FactoryBot::Syntax::Methods
 
-RSpec.describe Contact, type: :model do
+RSpec.describe Contact do
   describe 'validations' do
     let(:contact) { build(:contact) }
     let!(:existing_contact) { create(:contact) }
@@ -31,8 +31,8 @@ RSpec.describe Contact, type: :model do
 
     describe '.with_tag' do
       it 'returns contacts with the specified tag' do
-        expect(Contact.with_tag('VIP')).to include(contact1)
-        expect(Contact.with_tag('VIP')).not_to include(contact2)
+        expect(described_class.with_tag('VIP')).to include(contact1)
+        expect(described_class.with_tag('VIP')).not_to include(contact2)
       end
     end
   end

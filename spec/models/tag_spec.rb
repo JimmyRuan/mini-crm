@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Tag, type: :model do
+RSpec.describe Tag do
   describe 'validations' do
     subject { build(:tag) }
 

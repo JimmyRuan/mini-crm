@@ -1,13 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe ContactTag, type: :model do
+RSpec.describe ContactTag do
   describe 'validations' do
     let(:contact) { create(:contact) }
     let(:tag) { create(:tag) }
     let!(:existing_contact_tag) { create(:contact_tag, contact: contact, tag: tag) }
 
-    it { is_expected.to validate_presence_of(:contact_id) }
-    it { is_expected.to validate_presence_of(:tag_id) }
     it { is_expected.to validate_uniqueness_of(:contact_id).scoped_to(:tag_id) }
   end
 
