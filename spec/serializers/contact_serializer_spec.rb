@@ -2,17 +2,20 @@ require 'rails_helper'
 
 RSpec.describe ContactSerializer, type: :serializer do
   let(:contact) { create(:contact) }
-  let(:serializer) { described_class.new(contact) }
-  let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
-  let(:serialized_json) { serialization.to_json }
 
   describe 'attributes' do
     it 'includes the expected attributes' do
+      serializer = described_class.new(contact)
+      serialization = ActiveModelSerializers::Adapter.create(serializer)
+      serialized_json = serialization.to_json
       parsed_json = JSON.parse(serialized_json)
       expect(parsed_json.keys).to contain_exactly('id', 'name', 'email', 'created_at', 'updated_at', 'tags')
     end
 
     it 'includes the correct values' do
+      serializer = described_class.new(contact)
+      serialization = ActiveModelSerializers::Adapter.create(serializer)
+      serialized_json = serialization.to_json
       parsed_json = JSON.parse(serialized_json)
       expect(parsed_json['id']).to eq(contact.id)
       expect(parsed_json['name']).to eq(contact.name)
@@ -23,18 +26,21 @@ RSpec.describe ContactSerializer, type: :serializer do
   end
 
   describe 'associations' do
-    let!(:tag1) { create(:tag) }
-    let!(:tag2) { create(:tag) }
-    
+    let(:first_tag) { create(:tag) }
+    let(:second_tag) { create(:tag) }
+
     before do
-      contact.tags << [tag1, tag2]
+      contact.tags << [first_tag, second_tag]
     end
 
     it 'includes associated tags' do
+      serializer = described_class.new(contact)
+      serialization = ActiveModelSerializers::Adapter.create(serializer)
+      serialized_json = serialization.to_json
       parsed_json = JSON.parse(serialized_json)
       expect(parsed_json['tags'].length).to eq(2)
-      expect(parsed_json['tags'].first['id']).to eq(tag1.id)
-      expect(parsed_json['tags'].first['name']).to eq(tag1.name)
+      expect(parsed_json['tags'].first['id']).to eq(first_tag.id)
+      expect(parsed_json['tags'].first['name']).to eq(first_tag.name)
     end
   end
-end 
+end

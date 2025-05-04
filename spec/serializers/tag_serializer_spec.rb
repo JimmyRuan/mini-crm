@@ -2,17 +2,20 @@ require 'rails_helper'
 
 RSpec.describe TagSerializer, type: :serializer do
   let(:tag) { create(:tag) }
-  let(:serializer) { described_class.new(tag) }
-  let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
-  let(:serialized_json) { serialization.to_json }
 
   describe 'attributes' do
     it 'includes the expected attributes' do
+      serializer = described_class.new(tag)
+      serialization = ActiveModelSerializers::Adapter.create(serializer)
+      serialized_json = serialization.to_json
       parsed_json = JSON.parse(serialized_json)
       expect(parsed_json.keys).to contain_exactly('id', 'name', 'created_at', 'updated_at', 'contacts')
     end
 
     it 'includes the correct values' do
+      serializer = described_class.new(tag)
+      serialization = ActiveModelSerializers::Adapter.create(serializer)
+      serialized_json = serialization.to_json
       parsed_json = JSON.parse(serialized_json)
       expect(parsed_json['id']).to eq(tag.id)
       expect(parsed_json['name']).to eq(tag.name)
@@ -22,19 +25,22 @@ RSpec.describe TagSerializer, type: :serializer do
   end
 
   describe 'associations' do
-    let!(:contact1) { create(:contact) }
-    let!(:contact2) { create(:contact) }
-    
+    let(:first_contact) { create(:contact) }
+    let(:second_contact) { create(:contact) }
+
     before do
-      tag.contacts << [contact1, contact2]
+      tag.contacts << [first_contact, second_contact]
     end
 
     it 'includes associated contacts' do
+      serializer = described_class.new(tag)
+      serialization = ActiveModelSerializers::Adapter.create(serializer)
+      serialized_json = serialization.to_json
       parsed_json = JSON.parse(serialized_json)
       expect(parsed_json['contacts'].length).to eq(2)
-      expect(parsed_json['contacts'].first['id']).to eq(contact1.id)
-      expect(parsed_json['contacts'].first['name']).to eq(contact1.name)
-      expect(parsed_json['contacts'].first['email']).to eq(contact1.email)
+      expect(parsed_json['contacts'].first['id']).to eq(first_contact.id)
+      expect(parsed_json['contacts'].first['name']).to eq(first_contact.name)
+      expect(parsed_json['contacts'].first['email']).to eq(first_contact.email)
     end
   end
-end 
+end
