@@ -73,4 +73,9 @@ RSpec.configure do |config|
       with.library :rails
     end
   end
+
+  # Configure host for request specs
+  config.before(:each, type: :request) do
+    host! 'localhost:3000'
+  end
 end

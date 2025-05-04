@@ -144,15 +144,15 @@ RSpec.describe Api::V1::ContactsController do
   end
 
   describe 'GET #search' do
-    let(:tag) { create(:tag, name: 'important') }
-
+    let!(:tag) { create(:tag, name: 'important') }
+    let!(:contacts) { create_list(:contact, 10) }
+    
     before do
-      contacts = create_list(:contact, 10)
       contacts.each { |contact| contact.tags << tag }
     end
 
     it 'returns paginated contacts with the specified tag and correct serializer format' do
-      get :search, params: { tag: 'important' }
+      get :search, params: { tag_name: 'important' }
       parsed_response = response.parsed_body
       expect(parsed_response['contacts'].first.keys).to match_array(%w[id name email created_at updated_at tags])
       expect(parsed_response['total_pages']).to eq(1)
@@ -161,19 +161,20 @@ RSpec.describe Api::V1::ContactsController do
     end
 
     it 'respects per_page parameter in search' do
-      get :search, params: { tag: 'important', per_page: 5 }
+      get :search, params: { tag_name: 'important', per_page: 5 }
       expect(response.parsed_body['contacts'].size).to eq(5)
       expect(response.parsed_body['total_pages']).to eq(2)
     end
 
     it 'respects page parameter in search' do
-      get :search, params: { tag: 'important', page: 2 }
+      get :search, params: { tag_name: 'important', page: 2 }
       expect(response.parsed_body['current_page']).to eq(2)
     end
 
     it 'returns bad request when tag parameter is missing' do
       get :search
       expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body['error']).to eq('Tag parameter is required')
     end
   end
 end

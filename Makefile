@@ -35,6 +35,7 @@ help:
 	@echo "  make console        - Start Rails console"
 	@echo "  make routes         - List all routes"
 	@echo "  make clean          - Clean temporary files and logs"
+	@echo "  make swagger-docs   - Generate Swagger documentation"
 
 # Commands
 up: ## Start the services in the foreground
@@ -43,8 +44,11 @@ up: ## Start the services in the foreground
 up-detached: ## Start the services in the background
 	$(COMPOSE) up -d
 
-down: ## Stop the services
+down: ##  Stop and remove containers, networks, and volumes
 	$(COMPOSE) down
+
+stop: ## Stop the containers without removing them
+	$(COMPOSE) stop
 
 rebuild: ## Rebuild all services
 	$(COMPOSE) up --build
@@ -109,3 +113,6 @@ routes: ## List all routes
 
 clean: ## Clean temporary files and logs
 	$(DOCKER_EXEC) web bundle exec rails tmp:clear log:clear
+
+swagger-docs: ## Generate Swagger documentation
+	$(DOCKER_EXEC) web bundle exec rails rswag:specs:swaggerize

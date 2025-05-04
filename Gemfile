@@ -63,6 +63,7 @@ group :development, :test do
   gem 'rubocop-rails', '~> 2.20', require: false
   gem 'rubocop-rspec', '~> 2.26', require: false
   gem 'rubocop-rspec_rails', '~> 2.26', require: false
+  gem 'rswag', '~> 2.10'
   gem 'shoulda-matchers', '~> 6.0'
 end
 

@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  # Swagger documentation
+  mount Rswag::Ui::Engine => '/api-docs' if Rails.env.development?
+  mount Rswag::Api::Engine => '/api-docs' if Rails.env.development?
+
   namespace :api do
     namespace :v1 do
       resources :tags
