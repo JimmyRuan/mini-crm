@@ -119,4 +119,57 @@ RSpec.describe Api::V1::ContactsController do
       expect(response).to have_http_status(:no_content)
     end
   end
+
+  describe 'GET #search' do
+    let!(:tag) { create(:tag, name: 'important') }
+    let!(:contact_with_tag) { create(:contact) }
+    let!(:contact_without_tag) { create(:contact) }
+
+    before do
+      contact_with_tag.tags << tag
+    end
+
+    context 'when tag parameter is present' do
+      it 'returns contacts with the specified tag' do
+        get :search, params: { tag: 'important' }
+        expect(response).to be_successful
+        expect(response.parsed_body.size).to eq(1)
+        expect(response.parsed_body.first['id']).to eq(contact_with_tag.id)
+      end
+
+      it 'is case insensitive' do
+        get :search, params: { tag: 'IMPORTANT' }
+        expect(response).to be_successful
+        expect(response.parsed_body.size).to eq(1)
+      end
+
+      it 'handles whitespace' do
+        get :search, params: { tag: ' important ' }
+        expect(response).to be_successful
+        expect(response.parsed_body.size).to eq(1)
+      end
+
+      it 'returns empty array when no contacts have the tag' do
+        get :search, params: { tag: 'nonexistent' }
+        expect(response).to be_successful
+        expect(response.parsed_body).to be_empty
+      end
+    end
+
+    context 'when tag parameter is missing' do
+      it 'returns bad request status' do
+        get :search
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body['error']).to eq('Tag parameter is required')
+      end
+    end
+
+    context 'when tag parameter is empty' do
+      it 'returns bad request status' do
+        get :search, params: { tag: '' }
+        expect(response).to have_http_status(:bad_request)
+        expect(response.parsed_body['error']).to eq('Tag parameter is required')
+      end
+    end
+  end
 end
