@@ -15,12 +15,13 @@ RSpec.describe Api::V1::TagsController do
       expect(response).to be_successful
     end
 
-    it 'returns paginated tags' do
+    it 'returns paginated tags with correct serializer format' do
       get :index
-      expect(response.parsed_body['tags'].size).to eq(10)
-      expect(response.parsed_body['total_pages']).to eq(1)
-      expect(response.parsed_body['current_page']).to eq(1)
-      expect(response.parsed_body['total_entries']).to eq(10)
+      parsed_response = response.parsed_body
+      expect(parsed_response['tags'].first.keys).to match_array(%w[id name created_at updated_at contacts])
+      expect(parsed_response['total_pages']).to eq(1)
+      expect(parsed_response['current_page']).to eq(1)
+      expect(parsed_response['total_entries']).to eq(10)
     end
 
     it 'respects per_page parameter' do
@@ -41,9 +42,11 @@ RSpec.describe Api::V1::TagsController do
       expect(response).to be_successful
     end
 
-    it 'returns the requested tag' do
+    it 'returns the requested tag with correct serializer format' do
       get :show, params: { id: tag.id }
-      expect(response.parsed_body['id']).to eq(tag.id)
+      parsed_response = response.parsed_body
+      expect(parsed_response.keys).to match_array(%w[id name created_at updated_at contacts])
+      expect(parsed_response['id']).to eq(tag.id)
     end
 
     it 'returns 404 when tag not found' do
@@ -60,9 +63,11 @@ RSpec.describe Api::V1::TagsController do
         end.to change(Tag, :count).by(1)
       end
 
-      it 'returns a created response' do
+      it 'returns a created response with correct serializer format' do
         post :create, params: { tag: valid_attributes }
         expect(response).to have_http_status(:created)
+        parsed_response = response.parsed_body
+        expect(parsed_response.keys).to match_array(%w[id name created_at updated_at contacts])
       end
     end
 
@@ -90,9 +95,11 @@ RSpec.describe Api::V1::TagsController do
         expect(tag.name).to eq('Updated Tag')
       end
 
-      it 'returns a success response' do
+      it 'returns a success response with correct serializer format' do
         put :update, params: { id: tag.id, tag: valid_attributes }
         expect(response).to be_successful
+        parsed_response = response.parsed_body
+        expect(parsed_response.keys).to match_array(%w[id name created_at updated_at contacts])
       end
     end
 

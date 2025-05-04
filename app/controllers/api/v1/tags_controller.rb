@@ -6,7 +6,7 @@ module Api
       def index
         @tags = Tag.paginate(page: params[:page], per_page: params[:per_page] || 10)
         render json: {
-          tags: @tags,
+          tags: ActiveModel::Serializer::CollectionSerializer.new(@tags, serializer: TagSerializer),
           total_pages: @tags.total_pages,
           current_page: @tags.current_page,
           total_entries: @tags.total_entries
@@ -14,14 +14,14 @@ module Api
       end
 
       def show
-        render json: @tag
+        render json: @tag, serializer: TagSerializer
       end
 
       def create
         @tag = Tag.new(tag_params)
 
         if @tag.save
-          render json: @tag, status: :created
+          render json: @tag, serializer: TagSerializer, status: :created
         else
           render json: @tag.errors, status: :unprocessable_entity
         end
@@ -29,7 +29,7 @@ module Api
 
       def update
         if @tag.update(tag_params)
-          render json: @tag
+          render json: @tag, serializer: TagSerializer
         else
           render json: @tag.errors, status: :unprocessable_entity
         end

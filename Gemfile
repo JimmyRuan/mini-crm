@@ -45,6 +45,7 @@ gem 'bunny', '~> 2.18'
 gem 'pg', '~> 1.1'
 gem 'sidekiq', '~> 7.0'
 gem 'will_paginate', '~> 3.3'
+gem 'active_model_serializers', '~> 0.10.13'
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"

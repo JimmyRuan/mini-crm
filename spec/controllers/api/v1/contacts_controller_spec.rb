@@ -27,12 +27,13 @@ RSpec.describe Api::V1::ContactsController do
       expect(response).to be_successful
     end
 
-    it 'returns paginated contacts' do
+    it 'returns paginated contacts with correct serializer format' do
       get :index
-      expect(response.parsed_body['contacts'].size).to eq(10)
-      expect(response.parsed_body['total_pages']).to eq(1)
-      expect(response.parsed_body['current_page']).to eq(1)
-      expect(response.parsed_body['total_entries']).to eq(10)
+      parsed_response = response.parsed_body
+      expect(parsed_response['contacts'].first.keys).to match_array(%w[id name email created_at updated_at tags])
+      expect(parsed_response['total_pages']).to eq(1)
+      expect(parsed_response['current_page']).to eq(1)
+      expect(parsed_response['total_entries']).to eq(10)
     end
 
     it 'respects per_page parameter' do
@@ -53,9 +54,10 @@ RSpec.describe Api::V1::ContactsController do
       expect(response).to be_successful
     end
 
-    it 'returns the requested contact' do
+    it 'returns the requested contact with correct serializer format' do
       get :show, params: { id: contact.id }
       parsed_response = response.parsed_body
+      expect(parsed_response.keys).to match_array(%w[id name email created_at updated_at tags])
       expect(parsed_response['id']).to eq(contact.id)
     end
 
@@ -73,9 +75,11 @@ RSpec.describe Api::V1::ContactsController do
         end.to change(Contact, :count).by(1)
       end
 
-      it 'returns a created status' do
+      it 'returns a created status with correct serializer format' do
         post :create, params: { contact: valid_attributes }
         expect(response).to have_http_status(:created)
+        parsed_response = response.parsed_body
+        expect(parsed_response.keys).to match_array(%w[id name email created_at updated_at tags])
       end
     end
 
@@ -109,9 +113,11 @@ RSpec.describe Api::V1::ContactsController do
         expect(contact.email).to eq('jane@example.com')
       end
 
-      it 'returns a success response' do
+      it 'returns a success response with correct serializer format' do
         put :update, params: { id: contact.id, contact: valid_attributes }
         expect(response).to be_successful
+        parsed_response = response.parsed_body
+        expect(parsed_response.keys).to match_array(%w[id name email created_at updated_at tags])
       end
     end
 
@@ -145,12 +151,13 @@ RSpec.describe Api::V1::ContactsController do
       contacts.each { |contact| contact.tags << tag }
     end
 
-    it 'returns paginated contacts with the specified tag' do
+    it 'returns paginated contacts with the specified tag and correct serializer format' do
       get :search, params: { tag: 'important' }
-      expect(response.parsed_body['contacts'].size).to eq(10)
-      expect(response.parsed_body['total_pages']).to eq(1)
-      expect(response.parsed_body['current_page']).to eq(1)
-      expect(response.parsed_body['total_entries']).to eq(10)
+      parsed_response = response.parsed_body
+      expect(parsed_response['contacts'].first.keys).to match_array(%w[id name email created_at updated_at tags])
+      expect(parsed_response['total_pages']).to eq(1)
+      expect(parsed_response['current_page']).to eq(1)
+      expect(parsed_response['total_entries']).to eq(10)
     end
 
     it 'respects per_page parameter in search' do

@@ -21,14 +21,14 @@ module Api
       end
 
       def show
-        render json: @contact
+        render json: @contact, serializer: ContactSerializer
       end
 
       def create
         @contact = Contact.new(contact_params)
 
         if @contact.save
-          render json: @contact, status: :created
+          render json: @contact, serializer: ContactSerializer, status: :created
         else
           render json: @contact.errors, status: :unprocessable_entity
         end
@@ -36,7 +36,7 @@ module Api
 
       def update
         if @contact.update(contact_params)
-          render json: @contact
+          render json: @contact, serializer: ContactSerializer
         else
           render json: @contact.errors, status: :unprocessable_entity
         end
@@ -61,7 +61,7 @@ module Api
 
       def render_paginated_response(records)
         render json: {
-          contacts: records,
+          contacts: ActiveModel::Serializer::CollectionSerializer.new(records, serializer: ContactSerializer),
           total_pages: records.total_pages,
           current_page: records.current_page,
           total_entries: records.total_entries
