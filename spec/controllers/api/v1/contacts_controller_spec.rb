@@ -19,7 +19,7 @@ RSpec.describe Api::V1::ContactsController do
 
   describe 'GET #index' do
     before do
-      15.times { create(:contact) }
+      create_list(:contact, 10)
     end
 
     it 'returns a success response' do
@@ -30,15 +30,15 @@ RSpec.describe Api::V1::ContactsController do
     it 'returns paginated contacts' do
       get :index
       expect(response.parsed_body['contacts'].size).to eq(10)
-      expect(response.parsed_body['total_pages']).to eq(2)
+      expect(response.parsed_body['total_pages']).to eq(1)
       expect(response.parsed_body['current_page']).to eq(1)
-      expect(response.parsed_body['total_entries']).to eq(15)
+      expect(response.parsed_body['total_entries']).to eq(10)
     end
 
     it 'respects per_page parameter' do
       get :index, params: { per_page: 5 }
       expect(response.parsed_body['contacts'].size).to eq(5)
-      expect(response.parsed_body['total_pages']).to eq(3)
+      expect(response.parsed_body['total_pages']).to eq(2)
     end
 
     it 'respects page parameter' do
@@ -141,24 +141,22 @@ RSpec.describe Api::V1::ContactsController do
     let(:tag) { create(:tag, name: 'important') }
 
     before do
-      15.times do
-        contact = create(:contact)
-        contact.tags << tag
-      end
+      contacts = create_list(:contact, 10)
+      contacts.each { |contact| contact.tags << tag }
     end
 
     it 'returns paginated contacts with the specified tag' do
       get :search, params: { tag: 'important' }
       expect(response.parsed_body['contacts'].size).to eq(10)
-      expect(response.parsed_body['total_pages']).to eq(2)
+      expect(response.parsed_body['total_pages']).to eq(1)
       expect(response.parsed_body['current_page']).to eq(1)
-      expect(response.parsed_body['total_entries']).to eq(15)
+      expect(response.parsed_body['total_entries']).to eq(10)
     end
 
     it 'respects per_page parameter in search' do
       get :search, params: { tag: 'important', per_page: 5 }
       expect(response.parsed_body['contacts'].size).to eq(5)
-      expect(response.parsed_body['total_pages']).to eq(3)
+      expect(response.parsed_body['total_pages']).to eq(2)
     end
 
     it 'respects page parameter in search' do

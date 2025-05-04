@@ -5,12 +5,7 @@ module Api
 
       def index
         @contacts = Contact.paginate(page: params[:page], per_page: params[:per_page] || 10)
-        render json: {
-          contacts: @contacts,
-          total_pages: @contacts.total_pages,
-          current_page: @contacts.current_page,
-          total_entries: @contacts.total_entries
-        }
+        render_paginated_response(@contacts)
       end
 
       def search
@@ -19,12 +14,7 @@ module Api
           # Normalize the search term: trim whitespace and convert to lowercase
           normalized_tag = tag_name.strip.downcase
           @contacts = Contact.with_tag(normalized_tag).paginate(page: params[:page], per_page: params[:per_page] || 10)
-          render json: {
-            contacts: @contacts,
-            total_pages: @contacts.total_pages,
-            current_page: @contacts.current_page,
-            total_entries: @contacts.total_entries
-          }
+          render_paginated_response(@contacts)
         else
           render json: { error: 'Tag parameter is required' }, status: :bad_request
         end
@@ -67,6 +57,15 @@ module Api
 
       def contact_params
         params.require(:contact).permit(:name, :email)
+      end
+
+      def render_paginated_response(records)
+        render json: {
+          contacts: records,
+          total_pages: records.total_pages,
+          current_page: records.current_page,
+          total_entries: records.total_entries
+        }
       end
     end
   end

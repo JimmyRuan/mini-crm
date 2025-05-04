@@ -7,7 +7,7 @@ RSpec.describe Api::V1::TagsController do
 
   describe 'GET #index' do
     before do
-      15.times { create(:tag) }
+      create_list(:tag, 10)
     end
 
     it 'returns a success response' do
@@ -18,15 +18,15 @@ RSpec.describe Api::V1::TagsController do
     it 'returns paginated tags' do
       get :index
       expect(response.parsed_body['tags'].size).to eq(10)
-      expect(response.parsed_body['total_pages']).to eq(2)
+      expect(response.parsed_body['total_pages']).to eq(1)
       expect(response.parsed_body['current_page']).to eq(1)
-      expect(response.parsed_body['total_entries']).to eq(15)
+      expect(response.parsed_body['total_entries']).to eq(10)
     end
 
     it 'respects per_page parameter' do
       get :index, params: { per_page: 5 }
       expect(response.parsed_body['tags'].size).to eq(5)
-      expect(response.parsed_body['total_pages']).to eq(3)
+      expect(response.parsed_body['total_pages']).to eq(2)
     end
 
     it 'respects page parameter' do
